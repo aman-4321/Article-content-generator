@@ -17,7 +17,7 @@ export interface ContentGenerationOptions {
 
 export class ContentGenerator {
   private static generatePlaceholderContent(
-    options: ContentGenerationOptions,
+    options: ContentGenerationOptions
   ): string {
     const { title, topic, targetWordCount = 800 } = options;
 
@@ -53,7 +53,7 @@ export class ContentGenerator {
     let content = `# ${title}\n\n${introduction}\n\n`;
 
     const wordsPerSection = Math.floor(
-      (targetWordCount - 100) / sections.length,
+      (targetWordCount - 100) / sections.length
     );
 
     sections.forEach((section) => {
@@ -62,7 +62,7 @@ export class ContentGenerator {
 
       const additionalContent = this.generateAdditionalContent(
         topic,
-        wordsPerSection - 50,
+        wordsPerSection - 50
       );
       content += ` ${additionalContent}\n\n`;
     });
@@ -76,7 +76,7 @@ export class ContentGenerator {
 
   private static generateAdditionalContent(
     topic: string,
-    targetWords: number,
+    targetWords: number
   ): string {
     const sentences = [
       `This approach to ${topic} has been proven effective across various industries and use cases.`,
@@ -102,7 +102,7 @@ export class ContentGenerator {
       sentenceIndex++;
 
       if (sentenceIndex >= sentences.length) {
-        sentenceIndex = 0; // Reset to reuse sentences if needed
+        sentenceIndex = 0;
       }
     }
 
@@ -110,7 +110,7 @@ export class ContentGenerator {
   }
 
   private static calculateReadTime(content: string): number {
-    const wordsPerMinute = 200; // Average reading speed
+    const wordsPerMinute = 200;
     const wordCount = content.split(" ").length;
     return Math.ceil(wordCount / wordsPerMinute);
   }
@@ -128,7 +128,7 @@ export class ContentGenerator {
   }
 
   public static async generateContent(
-    options: ContentGenerationOptions,
+    options: ContentGenerationOptions
   ): Promise<GeneratedContent> {
     try {
       const { GeminiContentGenerator } = await import(
@@ -140,7 +140,7 @@ export class ContentGenerator {
     } catch (geminiError) {
       console.warn(
         "Gemini AI generation failed, falling back to placeholder content:",
-        geminiError,
+        geminiError
       );
 
       try {
@@ -163,10 +163,10 @@ export class ContentGenerator {
       } catch (fallbackError) {
         console.error(
           "Both Gemini and fallback content generation failed:",
-          fallbackError,
+          fallbackError
         );
         throw new Error(
-          "Failed to generate content with both AI and fallback methods",
+          "Failed to generate content with both AI and fallback methods"
         );
       }
     }

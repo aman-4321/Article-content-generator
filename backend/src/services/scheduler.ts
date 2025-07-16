@@ -16,7 +16,7 @@ export class ArticleScheduler {
     const dailyTask = cron.schedule(
       "0 17 * * *",
       async () => {
-        console.log("Daily article generation job triggered at 5:00 PM");
+        console.log("Daily article generation job triggered at 5:00 PM IST");
 
         try {
           await ArticleContentService.processArticlesForToday();
@@ -25,8 +25,8 @@ export class ArticleScheduler {
         }
       },
       {
-        timezone: "UTC",
-      },
+        timezone: "Asia/Kolkata",
+      }
     );
 
     const weeklyTask = cron.schedule(
@@ -42,7 +42,7 @@ export class ArticleScheduler {
       },
       {
         timezone: "UTC",
-      },
+      }
     );
 
     this.tasks.push(dailyTask, weeklyTask);
@@ -107,7 +107,7 @@ export class DevelopmentScheduler {
       "*/5 * * * *",
       async () => {
         console.log(
-          "Development: Article generation job triggered (every 5 minutes)",
+          "Development: Article generation job triggered (every 5 minutes)"
         );
 
         try {
@@ -118,7 +118,7 @@ export class DevelopmentScheduler {
       },
       {
         timezone: "UTC",
-      },
+      }
     );
   }
 }

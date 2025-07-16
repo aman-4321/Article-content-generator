@@ -529,7 +529,6 @@ export const testGeminiGeneration = async (req: Request, res: Response) => {
       "../services/geminiContentGenerator"
     );
 
-    // Test the connection first
     const connectionTest = await GeminiContentGenerator.testConnection();
 
     if (!connectionTest) {
@@ -541,7 +540,6 @@ export const testGeminiGeneration = async (req: Request, res: Response) => {
       return;
     }
 
-    // Generate a test article
     const testArticle = await GeminiContentGenerator.generateTestArticle();
 
     res.status(200).json({

@@ -108,7 +108,6 @@ export const generateCalendar = async (req: Request, res: Response) => {
             );
           generatedTitles.push(additionalTitle);
         } catch (error) {
-          // Final fallback to a simple template
           generatedTitles.push(`${topic.title}: Day ${i + 1} Guide`);
         }
       }
