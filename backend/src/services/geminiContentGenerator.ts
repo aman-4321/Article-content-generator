@@ -18,7 +18,7 @@ export class GeminiContentGenerator {
   }
 
   private static calculateReadTime(content: string): number {
-    const wordsPerMinute = 200; // Average reading speed
+    const wordsPerMinute = 200;
     const wordCount = content.split(" ").length;
     return Math.ceil(wordCount / wordsPerMinute);
   }
@@ -44,40 +44,58 @@ export class GeminiContentGenerator {
     } = options;
 
     return `
-You are an expert content writer and SEO specialist. Write a comprehensive, engaging, and SEO-optimized blog article with the following specifications:
+You are an expert content writer, SEO specialist, and marketing strategist. Write a comprehensive, highly engaging, and SEO-optimized blog article that will rank on Google's first page and drive significant organic traffic.
 
-**Article Title:** ${title}
-**Topic/Niche:** ${topic}
-**Target Word Count:** ${targetWordCount} words
-**Tone:** ${tone}
+**Article Details:**
+- **Title:** ${title}
+- **Topic/Niche:** ${topic}
+- **Target Word Count:** ${targetWordCount} words
+- **Tone:** ${tone}
 
-**Requirements:**
-1. Write a complete, well-structured article that would rank well on Google
-2. Include a compelling introduction that hooks the reader
-3. Use proper heading structure (H1, H2, H3) with SEO-friendly headings
-4. Include actionable tips, practical advice, and valuable insights
-5. Add bullet points or numbered lists where appropriate
-6. Write in an engaging, easy-to-read style
-7. Include a strong conclusion with a call-to-action
-8. Focus on providing real value to readers interested in ${topic}
-9. Use markdown formatting for headings, lists, and emphasis
-10. Ensure the content is original, informative, and comprehensive
+**Marketing & SEO Objectives:**
+1. Create content that solves real problems and provides actionable value
+2. Optimize for featured snippets and "People Also Ask" sections
+3. Include natural keyword placement throughout the content
+4. Write with search intent in mind (informational/commercial)
+5. Create content that encourages engagement, shares, and backlinks
+6. Structure for easy scanning and mobile readability
+
+**Content Requirements:**
+1. Write a compelling, click-worthy introduction that hooks readers immediately
+2. Use proper heading hierarchy (H1, H2, H3) with keyword-rich headings
+3. Include actionable tips, practical examples, and step-by-step guidance
+4. Add bullet points, numbered lists, and other scannable elements
+5. Include relevant statistics, data, or case studies when possible
+6. Write in an engaging, conversational tone that builds trust
+7. Create a strong conclusion with clear next steps or call-to-action
+8. Focus on E-A-T (Expertise, Authoritativeness, Trustworthiness)
+9. Use markdown formatting for better structure
+
+**SEO Strategy:**
+- Naturally incorporate primary and secondary keywords
+- Use semantic keywords and related terms
+- Create headings that answer common questions
+- Include internal linking opportunities (mention related topics)
+- Write meta-description worthy introductions
+- Optimize for voice search with natural language
 
 **Structure Guidelines:**
-- Start with an engaging introduction (100-150 words)
-- Include 4-6 main sections with descriptive H2 headings
-- Use H3 subheadings within sections when needed
-- Add practical examples and actionable advice
-- End with a compelling conclusion (100-150 words)
+- **Introduction (150-200 words):** Hook + problem + solution preview + what they'll learn
+- **Main Content (${Math.floor(
+      targetWordCount * 0.7
+    )} words):** 4-6 main sections with H2 headings
+- **Practical Examples:** Include real-world applications and case studies
+- **Actionable Tips:** Provide specific, implementable advice
+- **Conclusion (100-150 words):** Summarize key points + clear call-to-action
 
-**SEO Guidelines:**
-- Naturally incorporate the main topic keyword throughout
-- Use related keywords and synonyms
-- Write descriptive, keyword-rich headings
-- Create content that answers common questions about ${topic}
-- Ensure the content is comprehensive and authoritative
+**Content Goals:**
+- Establish authority and expertise in ${topic}
+- Provide immediate value that readers can implement
+- Create shareable, link-worthy content
+- Drive conversions through strategic CTAs
+- Build brand trust and credibility
 
-Please write the complete article now:
+Write the complete article using markdown formatting. Focus on creating content that not only ranks well but genuinely helps readers achieve their goals with ${topic}.
     `.trim();
   }
 
@@ -101,7 +119,6 @@ Please write the complete article now:
         throw new Error("Gemini returned empty content");
       }
 
-      // Calculate additional metadata
       const wordCount = content.split(" ").length;
       const estimatedReadTime = this.calculateReadTime(content);
       const seoKeywords = this.extractKeywords(options.title, options.topic);
@@ -118,7 +135,6 @@ Please write the complete article now:
     } catch (error) {
       console.error("Error generating content with Gemini:", error);
 
-      // If Gemini fails, provide a helpful error message
       if (error instanceof Error) {
         if (error.message.includes("API_KEY")) {
           throw new Error(
@@ -148,9 +164,6 @@ Please write the complete article now:
     }
   }
 
-  /**
-   * Test the Gemini API connection
-   */
   public static async testConnection(): Promise<boolean> {
     try {
       const testOptions: ContentGenerationOptions = {
@@ -168,9 +181,6 @@ Please write the complete article now:
     }
   }
 
-  /**
-   * Generate a quick test article for validation
-   */
   public static async generateTestArticle(): Promise<GeneratedContent> {
     const testOptions: ContentGenerationOptions = {
       title: "The Ultimate Guide to Content Marketing",
@@ -180,5 +190,185 @@ Please write the complete article now:
     };
 
     return await this.generateContent(testOptions);
+  }
+
+  public static async generateArticleTitles(
+    topic: string,
+    numberOfDays: number
+  ): Promise<string[]> {
+    try {
+      console.log(
+        `Generating ${numberOfDays} article titles for topic: "${topic}"`
+      );
+
+      const genAI = this.initializeGemini();
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `
+You are an expert content strategist and SEO specialist working for a marketing platform. Create a content calendar with ${numberOfDays} unique, highly engaging, and SEO-optimized article titles for the topic: "${topic}".
+
+**Marketing & SEO Focus:**
+- Each title should be designed to rank on Google's first page
+- Titles should attract clicks and drive organic traffic
+- Focus on solving real problems your audience faces
+- Include emotional triggers and power words
+- Consider search intent (informational, commercial, navigational)
+
+**Content Strategy:**
+1. Create titles that cover the complete customer journey
+2. Mix of content types:
+   - How-to guides (for beginners and experts)
+   - Ultimate guides and comprehensive resources
+   - Quick tips and actionable advice
+   - Common mistakes and what to avoid
+   - Tools, resources, and recommendations
+   - Case studies and success stories
+   - Trends and future predictions
+   - Comparison guides
+   - Problem-solving articles
+   - Best practices and strategies
+
+**SEO Requirements:**
+- Include relevant keywords naturally
+- Use numbers when appropriate (e.g., "7 Ways", "Top 10")
+- Keep titles between 50-60 characters when possible
+- Use power words: Ultimate, Complete, Essential, Proven, Secret, Advanced, etc.
+- Make each title unique and specific
+- Ensure titles promise clear value
+
+**Examples of good patterns:**
+- "The Complete Guide to [Topic] for [Audience]"
+- "7 Proven [Topic] Strategies That Actually Work"
+- "[Number] [Topic] Mistakes That Are Killing Your Results"
+- "How to [Achieve Result] with [Topic] in [Timeframe]"
+- "Ultimate [Topic] Checklist for [Year]"
+
+**Topic:** ${topic}
+
+Generate exactly ${numberOfDays} SEO-optimized, marketing-focused article titles that will drive traffic and engagement. Format as a numbered list:
+1. [Title]
+2. [Title]
+...and so on.
+
+Only return the numbered list of titles, nothing else.
+      `.trim();
+
+      console.log("Sending title generation request to Gemini API...");
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const content = response.text();
+
+      if (!content || content.trim().length === 0) {
+        throw new Error("Gemini returned empty content for titles");
+      }
+
+      const lines = content.trim().split("\n");
+      const titles: string[] = [];
+
+      for (const line of lines) {
+        const match = line.match(/^\d+\.\s*(.+)$/);
+        if (match && match[1]) {
+          titles.push(match[1].trim());
+        }
+      }
+
+      if (titles.length !== numberOfDays) {
+        console.warn(
+          `Expected ${numberOfDays} titles but got ${titles.length}. Using what we have.`
+        );
+      }
+
+      console.log(`Generated ${titles.length} article titles successfully`);
+      return titles;
+    } catch (error) {
+      console.error("Error generating titles with Gemini:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("API_KEY")) {
+          throw new Error(
+            "Gemini API key is invalid or not configured. Please check your GEMINI_API_KEY environment variable."
+          );
+        }
+      }
+
+      throw new Error(
+        `Failed to generate titles with Gemini: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  public static async generateSingleTitle(
+    topic: string,
+    dayNumber: number,
+    context?: string
+  ): Promise<string> {
+    try {
+      console.log(
+        `Generating single title for day ${dayNumber} of topic: "${topic}"`
+      );
+
+      const genAI = this.initializeGemini();
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const contextInfo = context ? `\n**Context:** ${context}` : "";
+
+      const prompt = `
+You are an expert content strategist and SEO specialist working for a marketing platform. Create a single, highly engaging and SEO-optimized article title for day ${dayNumber} of a content series about "${topic}".
+
+**Marketing & SEO Focus:**
+- Design this title to rank on Google's first page for relevant searches
+- Make it click-worthy and shareable
+- Include emotional triggers that drive engagement
+- Consider commercial and informational search intent
+- Use proven patterns that perform well in organic search
+
+**Title Requirements:**
+1. SEO-optimized with relevant keywords
+2. 50-60 characters when possible for optimal SERP display
+3. Include power words (Ultimate, Complete, Proven, Secret, Essential, etc.)
+4. Promise clear, specific value to readers
+5. Use numbers or specificity when appropriate
+6. Make it actionable and results-focused
+
+**Content Strategy Context:**
+- This is part of a ${dayNumber}-day content series
+- Should complement other titles in the series
+- Focus on solving real problems your audience faces
+- Consider where this fits in the customer journey${contextInfo}
+
+**Topic:** ${topic}
+**Day:** ${dayNumber}
+
+Examples of high-performing patterns:
+- "How to [Achieve Result] with [Topic] (Step-by-Step Guide)"
+- "The Ultimate [Topic] Strategy That [Benefit]"
+- "[Number] Proven [Topic] Tips That Actually Work"
+- "[Topic] Mistakes That Are Costing You [Negative Outcome]"
+
+Generate one SEO-optimized, marketing-focused article title that will drive traffic and engagement. Return only the title, no quotes, no numbering.
+      `.trim();
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const title = response.text().trim();
+
+      if (!title || title.length === 0) {
+        throw new Error("Gemini returned empty title");
+      }
+
+      const cleanTitle = title.replace(/^["']|["']$/g, "");
+
+      console.log(`Generated title for day ${dayNumber}: "${cleanTitle}"`);
+      return cleanTitle;
+    } catch (error) {
+      console.error("Error generating single title with Gemini:", error);
+      throw new Error(
+        `Failed to generate title with Gemini: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   }
 }
