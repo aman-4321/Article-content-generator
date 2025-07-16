@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topics   Topic[]
+  articles Article[]
+}
+
+model Topic {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendars Calendar[]
+  articles  Article[]
+}
+
+model Calendar {
+  id        Int      @id @default(autoincrement())
+  topicId   Int
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topic    Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  articles Article[]
+
+  @@unique([topicId, month, year])
+}
+
+model Article {
+  id            Int           @id @default(autoincrement())
+  title         String
+  content       String?       @db.Text
+  scheduledDate DateTime
+  status        ArticleStatus @default(SCHEDULED)
+  userId        Int
+  topicId       Int
+  calendarId    Int
+  generatedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic    Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  calendar Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  @@index([scheduledDate])
+  @@index([status])
+}
+
+enum ArticleStatus {
+  SCHEDULED
+  GENERATING
+  COMPLETED
+  FAILED
+}
