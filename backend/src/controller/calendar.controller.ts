@@ -4,24 +4,7 @@ import {
   calendarParamsSchema,
   generateCalendarSchema,
 } from "../zod/calendarSchema";
-
-const generateSimpleTitle = (topicTitle: string, day: number): string => {
-  const titleTemplates = [
-    `${topicTitle}: Essential Tips for Day ${day}`,
-    `Mastering ${topicTitle}: Guide ${day}`,
-    `${topicTitle} Basics: Lesson ${day}`,
-    `Advanced ${topicTitle}: Day ${day}`,
-    `${topicTitle} Strategies: Part ${day}`,
-    `Complete ${topicTitle} Guide: Chapter ${day}`,
-    `${topicTitle} Fundamentals: Day ${day}`,
-    `Professional ${topicTitle}: Session ${day}`,
-    `${topicTitle} Best Practices: Day ${day}`,
-    `Ultimate ${topicTitle}: Step ${day}`,
-  ];
-
-  const templateIndex = (day - 1) % titleTemplates.length;
-  return titleTemplates[templateIndex];
-};
+import { GeminiContentGenerator } from "../services/geminiContentGenerator";
 
 export const generateCalendar = async (req: Request, res: Response) => {
   try {
@@ -91,9 +74,50 @@ export const generateCalendar = async (req: Request, res: Response) => {
 
     const daysInMonth = new Date(year, month, 0).getDate();
 
+    console.log(
+      `Generating ${daysInMonth} article titles for topic: ${topic.title}`
+    );
+
+    let generatedTitles: string[];
+    try {
+      generatedTitles = await GeminiContentGenerator.generateArticleTitles(
+        topic.title,
+        daysInMonth
+      );
+    } catch (error) {
+      console.error("Failed to generate titles with Gemini:", error);
+      res.status(500).json({
+        message: "Failed to generate article titles using AI",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return;
+    }
+
+    if (generatedTitles.length < daysInMonth) {
+      console.warn(
+        `Only got ${generatedTitles.length} titles, generating additional ones...`
+      );
+
+      for (let i = generatedTitles.length; i < daysInMonth; i++) {
+        try {
+          const additionalTitle =
+            await GeminiContentGenerator.generateSingleTitle(
+              topic.title,
+              i + 1,
+              `Part of a ${daysInMonth}-day content series`
+            );
+          generatedTitles.push(additionalTitle);
+        } catch (error) {
+          // Final fallback to a simple template
+          generatedTitles.push(`${topic.title}: Day ${i + 1} Guide`);
+        }
+      }
+    }
+
     const articlesData = [];
     for (let day = 1; day <= daysInMonth; day++) {
-      const title = generateSimpleTitle(topic.title, day);
+      const title =
+        generatedTitles[day - 1] || `${topic.title}: Day ${day} Guide`;
       const scheduledDate = new Date(year, month - 1, day, 17, 0, 0);
 
       articlesData.push({
