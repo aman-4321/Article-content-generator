@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useArticles } from "@/hooks/useArticles";
@@ -43,7 +43,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function ArticlesPage() {
+function ArticlesPageContent() {
   const searchParams = useSearchParams();
   const {
     contentHistory,
@@ -66,30 +66,33 @@ export default function ArticlesPage() {
     fetchContentHistory(currentPage, itemsPerPage, selectedTopicId);
   }, [currentPage, selectedTopicId, fetchContentHistory]);
 
-  // Handle direct article viewing from URL parameter
+  const handleViewArticle = useCallback(
+    async (articleId: number) => {
+      try {
+        const article = await fetchArticleById(articleId);
+        if (article) {
+          setSelectedArticle(article);
+          setIsViewingArticle(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch article:", error);
+      }
+    },
+    [fetchArticleById]
+  );
+
   useEffect(() => {
     const viewArticleId = searchParams.get("viewArticle");
     if (viewArticleId && !selectedArticle && !isViewingArticle) {
-      handleViewArticle(parseInt(viewArticleId));
+      const articleId = parseInt(viewArticleId);
+      handleViewArticle(articleId);
     }
-  }, [searchParams, selectedArticle, isViewingArticle]);
+  }, [searchParams, selectedArticle, isViewingArticle, handleViewArticle]);
 
   const handleTopicFilter = (topicId: string) => {
     const id = topicId === "all" ? undefined : parseInt(topicId);
     setSelectedTopicId(id);
     setCurrentPage(1);
-  };
-
-  const handleViewArticle = async (articleId: number) => {
-    try {
-      const article = await fetchArticleById(articleId);
-      if (article) {
-        setSelectedArticle(article);
-        setIsViewingArticle(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch article:", error);
-    }
   };
 
   const formatDate = (dateString: string) => {
@@ -386,5 +389,26 @@ export default function ArticlesPage() {
         </div>
       </div>
     </ProtectedRoute>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense
+      fallback={
+        <ProtectedRoute>
+          <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto space-y-6">
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span className="ml-2">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </ProtectedRoute>
+      }
+    >
+      <ArticlesPageContent />
+    </Suspense>
   );
 }
