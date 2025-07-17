@@ -1,19 +1,62 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useArticles } from "@/hooks/useArticles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, FileText, Loader2, ArrowRight } from "lucide-react";
+import {
+  Clock,
+  Calendar,
+  FileText,
+  Loader2,
+  ArrowRight,
+  Zap,
+  Eye,
+} from "lucide-react";
 import Link from "next/link";
 
 export function UpcomingArticles() {
-  const { upcomingArticles, isLoading, fetchUpcomingArticles } = useArticles();
+  const router = useRouter();
+  const {
+    upcomingArticles,
+    isLoading,
+    fetchUpcomingArticles,
+    generateArticleContent,
+  } = useArticles();
+  const [generatingArticles, setGeneratingArticles] = useState<Set<number>>(
+    new Set()
+  );
 
   useEffect(() => {
     fetchUpcomingArticles();
   }, [fetchUpcomingArticles]);
+
+  const handleGenerateNow = async (articleId: number) => {
+    try {
+      setGeneratingArticles((prev) => new Set(prev).add(articleId));
+
+      const response = await generateArticleContent(articleId);
+
+      if (response) {
+        await fetchUpcomingArticles();
+      }
+    } catch (error) {
+      console.error("Failed to generate article:", error);
+    } finally {
+      setGeneratingArticles((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(articleId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleViewArticle = (articleId: number) => {
+    // Navigate to articles page with the article ID as a query parameter
+    router.push(`/articles?viewArticle=${articleId}`);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -134,13 +177,46 @@ export function UpcomingArticles() {
                           {formatDate(article.scheduledDate)}
                         </div>
                       </div>
-                      <Badge
-                        variant={getStatusBadgeVariant(article.status)}
-                        className="text-xs flex items-center gap-1"
-                      >
-                        {getStatusIcon(article.status)}
-                        {article.status}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        {article.status === "SCHEDULED" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleGenerateNow(article.id)}
+                            disabled={generatingArticles.has(article.id)}
+                            className="text-xs h-7"
+                          >
+                            {generatingArticles.has(article.id) ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Zap className="h-3 w-3" />
+                            )}
+                            <span className="ml-1">
+                              {generatingArticles.has(article.id)
+                                ? "Generating..."
+                                : "Generate Now"}
+                            </span>
+                          </Button>
+                        )}
+                        {article.status === "COMPLETED" && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleViewArticle(article.id)}
+                            className="text-xs h-7"
+                          >
+                            <Eye className="h-3 w-3" />
+                            <span className="ml-1">View Article</span>
+                          </Button>
+                        )}
+                        <Badge
+                          variant={getStatusBadgeVariant(article.status)}
+                          className="text-xs flex items-center gap-1"
+                        >
+                          {getStatusIcon(article.status)}
+                          {article.status}
+                        </Badge>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -168,13 +244,46 @@ export function UpcomingArticles() {
                           {article.daysFromNow !== 1 ? "s" : ""}
                         </div>
                       </div>
-                      <Badge
-                        variant={getStatusBadgeVariant(article.status)}
-                        className="text-xs flex items-center gap-1"
-                      >
-                        {getStatusIcon(article.status)}
-                        {article.status}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        {article.status === "SCHEDULED" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleGenerateNow(article.id)}
+                            disabled={generatingArticles.has(article.id)}
+                            className="text-xs h-7"
+                          >
+                            {generatingArticles.has(article.id) ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Zap className="h-3 w-3" />
+                            )}
+                            <span className="ml-1">
+                              {generatingArticles.has(article.id)
+                                ? "Generating..."
+                                : "Generate Now"}
+                            </span>
+                          </Button>
+                        )}
+                        {article.status === "COMPLETED" && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleViewArticle(article.id)}
+                            className="text-xs h-7"
+                          >
+                            <Eye className="h-3 w-3" />
+                            <span className="ml-1">View Article</span>
+                          </Button>
+                        )}
+                        <Badge
+                          variant={getStatusBadgeVariant(article.status)}
+                          className="text-xs flex items-center gap-1"
+                        >
+                          {getStatusIcon(article.status)}
+                          {article.status}
+                        </Badge>
+                      </div>
                     </div>
                   ))}
                 </div>

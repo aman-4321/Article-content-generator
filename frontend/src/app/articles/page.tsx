@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useArticles } from "@/hooks/useArticles";
 import { useTopics } from "@/hooks/useTopics";
@@ -43,6 +44,7 @@ import {
 import Link from "next/link";
 
 export default function ArticlesPage() {
+  const searchParams = useSearchParams();
   const {
     contentHistory,
     isLoading,
@@ -63,6 +65,14 @@ export default function ArticlesPage() {
   useEffect(() => {
     fetchContentHistory(currentPage, itemsPerPage, selectedTopicId);
   }, [currentPage, selectedTopicId, fetchContentHistory]);
+
+  // Handle direct article viewing from URL parameter
+  useEffect(() => {
+    const viewArticleId = searchParams.get("viewArticle");
+    if (viewArticleId && !selectedArticle && !isViewingArticle) {
+      handleViewArticle(parseInt(viewArticleId));
+    }
+  }, [searchParams, selectedArticle, isViewingArticle]);
 
   const handleTopicFilter = (topicId: string) => {
     const id = topicId === "all" ? undefined : parseInt(topicId);
