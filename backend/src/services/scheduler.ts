@@ -14,9 +14,9 @@ export class ArticleScheduler {
     console.log("Starting article generation scheduler...");
 
     const dailyTask = cron.schedule(
-      "0 17 * * *",
+      "0 12 * * *",
       async () => {
-        console.log("Daily article generation job triggered at 5:00 PM IST");
+        console.log("Daily article generation job triggered at 12:00 PM IST");
 
         try {
           await ArticleContentService.processArticlesForToday();
@@ -41,7 +41,7 @@ export class ArticleScheduler {
         }
       },
       {
-        timezone: "UTC",
+        timezone: "Asia/Kolkata",
       }
     );
 

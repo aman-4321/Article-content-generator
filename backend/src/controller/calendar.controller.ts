@@ -117,7 +117,7 @@ export const generateCalendar = async (req: Request, res: Response) => {
     for (let day = 1; day <= daysInMonth; day++) {
       const title =
         generatedTitles[day - 1] || `${topic.title}: Day ${day} Guide`;
-      const scheduledDate = new Date(year, month - 1, day, 17, 0, 0);
+      const scheduledDate = new Date(year, month - 1, day, 12, 0, 0);
 
       articlesData.push({
         title,
