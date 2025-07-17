@@ -75,11 +75,14 @@ export class ArticleContentService {
 
   public static async getArticlesForToday(): Promise<number[]> {
     try {
-      const startOfScheduledHour = new Date();
-      startOfScheduledHour.setHours(12, 0, 0, 0);
+      const today = new Date().toISOString().split("T")[0];
 
-      const endOfScheduledHour = new Date();
-      endOfScheduledHour.setHours(12, 59, 59, 999);
+      const startOfScheduledHour = new Date(`${today}T06:30:00.000Z`);
+      const endOfScheduledHour = new Date(`${today}T07:29:59.999Z`);
+
+      console.log(
+        `Looking for articles between ${startOfScheduledHour.toISOString()} and ${endOfScheduledHour.toISOString()}`
+      );
 
       const articles = await prisma.article.findMany({
         where: {
@@ -96,11 +99,11 @@ export class ArticleContentService {
       });
 
       console.log(
-        `Found ${articles.length} articles scheduled for 12 PM today`
+        `Found ${articles.length} articles scheduled for 12 PM IST today`
       );
       articles.forEach((article) => {
         console.log(
-          `Article ${article.id} scheduled for: ${article.scheduledDate}`
+          `Article ${article.id} scheduled for: ${article.scheduledDate} (UTC)`
         );
       });
 
