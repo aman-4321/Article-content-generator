@@ -54,12 +54,12 @@ export function UpcomingArticles() {
   };
 
   const handleViewArticle = (articleId: number) => {
-    // Navigate to articles page with the article ID as a query parameter
     router.push(`/articles?viewArticle=${articleId}`);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",

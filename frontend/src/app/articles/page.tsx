@@ -96,7 +96,8 @@ function ArticlesPageContent() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -105,7 +106,6 @@ function ArticlesPageContent() {
       timeZone: "Asia/Kolkata",
     });
   };
-
   if (isViewingArticle && selectedArticle) {
     return (
       <ProtectedRoute>
