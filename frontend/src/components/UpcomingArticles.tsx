@@ -65,6 +65,7 @@ export function UpcomingArticles() {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "Asia/Kolkata",
+      hour12: true,
     });
   };
 

@@ -75,23 +75,33 @@ export class ArticleContentService {
 
   public static async getArticlesForToday(): Promise<number[]> {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const startOfScheduledHour = new Date();
+      startOfScheduledHour.setHours(12, 0, 0, 0);
 
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
+      const endOfScheduledHour = new Date();
+      endOfScheduledHour.setHours(12, 59, 59, 999);
 
       const articles = await prisma.article.findMany({
         where: {
           scheduledDate: {
-            gte: today,
-            lt: tomorrow,
+            gte: startOfScheduledHour,
+            lte: endOfScheduledHour,
           },
           status: "SCHEDULED",
         },
         select: {
           id: true,
+          scheduledDate: true,
         },
+      });
+
+      console.log(
+        `Found ${articles.length} articles scheduled for 12 PM today`
+      );
+      articles.forEach((article) => {
+        console.log(
+          `Article ${article.id} scheduled for: ${article.scheduledDate}`
+        );
       });
 
       return articles.map((article) => article.id);
