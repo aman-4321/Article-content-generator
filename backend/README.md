@@ -6,7 +6,7 @@ A powerful **MarkTech platform** that automates SEO-rich article generation usin
 
 - **🤖 AI-Powered Content**: Google Gemini AI integration for high-quality article generation
 - **📅 Calendar Generation**: Auto-generate monthly content calendars with AI-powered article titles
-- **⏰ Background Jobs**: Automated content generation at 5:00 PM daily
+- **⏰ Background Jobs**: Automated content generation at 12:00 PM IST daily
 - **📊 Content Management**: Complete article lifecycle management with status tracking
 - **🔐 User Authentication**: Secure JWT-based authentication system
 - **🚀 RESTful API**: Clean, well-documented API endpoints
@@ -619,7 +619,7 @@ All protected routes require a JWT token stored in HTTP-only cookies. Authentica
 
 The system automatically runs background jobs:
 
-### Daily Article Generation (5:00 PM UTC)
+### Daily Article Generation (12:00 PM IST)
 
 - Automatically generates content for all articles scheduled for today
 - Updates article status from `SCHEDULED` → `GENERATING` → `COMPLETED`/`FAILED`

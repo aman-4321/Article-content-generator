@@ -84,8 +84,8 @@ export class ArticleScheduler {
 
       return {
         schedulerRunning: this.isRunning,
-        nextRun: "Daily at 5:00 PM UTC",
-        timezone: "UTC",
+        nextRun: "Daily at 12:00 PM IST",
+        timezone: "Asia/Kolkata",
         statistics: stats,
         lastRun: new Date().toISOString(),
       };
@@ -124,7 +124,7 @@ export class DevelopmentScheduler {
 }
 
 export const SchedulerConfig = {
-  DAILY_GENERATION: "0 17 * * *",
+  DAILY_GENERATION: "0 12 * * *",
 
   TEST_MODE: "* * * * *",
 

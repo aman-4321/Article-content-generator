@@ -89,6 +89,7 @@ export default function ArticlesPage() {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Kolkata",
     });
   };
 
@@ -125,7 +126,7 @@ export default function ArticlesPage() {
                   dangerouslySetInnerHTML={{
                     __html: (selectedArticle.content || "").replace(
                       /\n/g,
-                      "<br>",
+                      "<br>"
                     ),
                   }}
                 />
@@ -323,7 +324,6 @@ export default function ArticlesPage() {
                     </TableBody>
                   </Table>
 
-                  {/* Pagination */}
                   {contentHistory &&
                     contentHistory.pagination.totalPages > 1 && (
                       <div className="flex items-center justify-between mt-6">
@@ -331,7 +331,7 @@ export default function ArticlesPage() {
                           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                           {Math.min(
                             currentPage * itemsPerPage,
-                            contentHistory.pagination.totalCount,
+                            contentHistory.pagination.totalCount
                           )}{" "}
                           of {contentHistory.pagination.totalCount} results
                         </div>
@@ -354,8 +354,8 @@ export default function ArticlesPage() {
                               setCurrentPage((prev) =>
                                 Math.min(
                                   contentHistory.pagination.totalPages,
-                                  prev + 1,
-                                ),
+                                  prev + 1
+                                )
                               )
                             }
                             disabled={
