@@ -48,7 +48,7 @@ export class ArticleScheduler {
     this.tasks.push(dailyTask, weeklyTask);
     this.isRunning = true;
     console.log("Article scheduler started successfully");
-    console.log("Daily article generation will run at 5:00 PM UTC");
+    console.log("Daily article generation will run at 12:00 PM IST");
   }
 
   public static stop(): void {
